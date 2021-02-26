@@ -1,5 +1,13 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Animated,
+  Easing,
+} from "react-native";
 import Video from "react-native-video";
 import Foundation from "react-native-vector-icons/Foundation";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -10,6 +18,28 @@ import TextTicker from "react-native-text-ticker";
 import {} from "react-native-gesture-handler";
 
 const Post = () => {
+  const spinValue = useRef(new Animated.Value(0)).current;
+
+  const animateDisc = () => {
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  useEffect(() => {
+    animateDisc();
+  }, []);
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
   return (
     <View style={styles.container}>
       <Video
@@ -56,20 +86,40 @@ const Post = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.bottomContainer}>
-        <Text style={styles.username}>@Dexu Dev</Text>
-        <Text style={styles.description}>Hello there</Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {/* icon */}
-          <Foundation name='music' size={15} color={"#fff"} />
-          <TextTicker
-            style={styles.songName}
-            loop
-            bounce={false}
-            shouldAnimateTreshold={40}
-          >
-            Miki Matsubara - Stay whit me
-          </TextTicker>
+        <View>
+          <Text style={styles.username}>@Dexu Dev</Text>
+          <Text style={styles.description}>Hello there</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* icon */}
+            <Foundation name='music' size={15} color={"#fff"} />
+            <TextTicker
+              style={styles.songName}
+              loop
+              bounce={false}
+              shouldAnimateTreshold={40}
+            >
+              Miki Matsubara - Stay whit me
+            </TextTicker>
+          </View>
         </View>
+
+        <Animated.View
+          style={[
+            styles.songCoverContainer,
+            {
+              transform: [{ rotate: spin }],
+            },
+          ]}
+        >
+          <Image source={require("../assets/images/disc.png")} />
+          <Image
+            style={styles.songCover}
+            source={{
+              uri:
+                "https://ih1.redbubble.net/image.749166292.7611/fpp,small,lustre,wall_texture,product,750x1000.u1.jpg",
+            }}
+          />
+        </Animated.View>
       </View>
     </View>
   );
@@ -92,6 +142,9 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingBottom: 10,
     paddingHorizontal: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   username: {
     color: "#fff",
@@ -140,6 +193,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     marginTop: 5.27,
+  },
+  songCoverContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  songCover: {
+    width: 29,
+    height: 29,
+    borderRadius: 29 / 2,
+    position: "absolute",
   },
 });
 
