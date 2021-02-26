@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Video from "react-native-video";
 import Foundation from "react-native-vector-icons/Foundation";
@@ -15,12 +16,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import TextTicker from "react-native-text-ticker";
-import {} from "react-native-gesture-handler";
 
 const Post = () => {
   const spinValue = useRef(new Animated.Value(0)).current;
+  const [pausedVideo, setpausedVideo] = useState(false);
 
-  const animateDisc = () => {
+  const animateDisc = useCallback(() => {
     Animated.loop(
       Animated.timing(spinValue, {
         toValue: 1,
@@ -29,7 +30,7 @@ const Post = () => {
         useNativeDriver: true,
       })
     ).start();
-  };
+  }, []);
 
   useEffect(() => {
     animateDisc();
@@ -42,15 +43,22 @@ const Post = () => {
 
   return (
     <View style={styles.container}>
-      <Video
-        style={styles.video}
-        resizeMode='cover'
-        source={{
-          uri:
-            "https://res.cloudinary.com/sgarciacloud/video/upload/v1614146740/videoexample.mp4",
+      <TouchableWithoutFeedback
+        onPress={() => {
+          setpausedVideo(!pausedVideo);
         }}
-        repeat
-      />
+      >
+        <Video
+          style={styles.video}
+          resizeMode='cover'
+          paused={pausedVideo}
+          source={{
+            uri:
+              "https://res.cloudinary.com/sgarciacloud/video/upload/v1614146740/videoexample.mp4",
+          }}
+          repeat
+        />
+      </TouchableWithoutFeedback>
 
       <View style={styles.sideContainer}>
         <TouchableOpacity style={styles.avatarContainer}>
